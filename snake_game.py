@@ -127,7 +127,7 @@ def game_loop():
                     if event.key == pygame.K_c:
                         game_loop()
 
-        # 只有在游戏未结束时才绘制蛇
+        # 只有在游戏未结束时才绘制蛇和更新分数
         if not game_close:
             draw_snake(SNAKE_BLOCK, snake_list)
             display_score(snake_length - 1)
@@ -135,7 +135,7 @@ def game_loop():
         pygame.display.update()
 
         # 检查是否吃到果实
-        if x1 == food_x and y1 == food_y:
+        if not game_close and x1 == food_x and y1 == food_y:
             food_x = round(random.randrange(0, WINDOW_WIDTH - SNAKE_BLOCK) / 20.0) * 20.0
             food_y = round(random.randrange(0, WINDOW_HEIGHT - SNAKE_BLOCK) / 20.0) * 20.0
             snake_length += 1
