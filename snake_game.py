@@ -101,20 +101,36 @@ def game_loop():
         y1 += y1_change
         window.fill(WHITE)
         pygame.draw.rect(window, BLUE, [food_x, food_y, SNAKE_BLOCK, SNAKE_BLOCK])
-        snake_head = []
-        snake_head.append(x1)
-        snake_head.append(y1)
+        snake_head = [x1, y1]
         snake_list.append(snake_head)
         if len(snake_list) > snake_length:
             del snake_list[0]
 
         # 检查是否撞到自己
-        for x in snake_list[:-1]:
+        for x in snake_list[:-1]:  # 排除蛇头本身
             if x == snake_head:
                 game_close = True
 
-        draw_snake(SNAKE_BLOCK, snake_list)
-        display_score(snake_length - 1)
+        # 如果游戏结束，进入游戏结束处理逻辑
+        if game_close:
+            window.fill(WHITE)  # 清除屏幕
+            display_message("Game Over! Press Q to Quit or C to Play Again", RED)
+            display_score(snake_length - 1)  # 显示最终分数
+            pygame.display.update()
+
+            # 等待用户输入
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_q:
+                        game_over = True
+                        game_close = False
+                    if event.key == pygame.K_c:
+                        game_loop()
+
+        # 只有在游戏未结束时才绘制蛇
+        if not game_close:
+            draw_snake(SNAKE_BLOCK, snake_list)
+            display_score(snake_length - 1)
 
         pygame.display.update()
 
@@ -123,6 +139,10 @@ def game_loop():
             food_x = round(random.randrange(0, WINDOW_WIDTH - SNAKE_BLOCK) / 20.0) * 20.0
             food_y = round(random.randrange(0, WINDOW_HEIGHT - SNAKE_BLOCK) / 20.0) * 20.0
             snake_length += 1
+
+        # 确保蛇头不会立即与蛇身碰撞
+        if len(snake_list) > 1 and snake_head in snake_list[:-1]:
+            game_close = True
 
         clock.tick(SNAKE_SPEED)
 
